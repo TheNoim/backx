@@ -1,0 +1,26 @@
+<ion-content id="bakery-list-main-content">
+    <ion-list *ngIf="(adminBakeries$ | async)?.length > 0">
+        <ion-list-header>Bakeries where you are an admin</ion-list-header>
+        <ion-item *ngFor="let bakery of (adminBakeries$ | async)">
+            <ion-label>
+                <h2>{{bakery.name}}</h2>
+                <h3 *ngIf="bakery.description">{{bakery.description}}</h3>
+            </ion-label>
+            <ion-fab-button color="danger">
+                <ion-icon name="settings-outline"></ion-icon>
+            </ion-fab-button>
+            <ion-fab-button >
+                <ion-icon name="caret-forward-outline"></ion-icon>
+            </ion-fab-button>
+        </ion-item>
+    </ion-list>
+    <ion-list *ngIf="(bakeries$ | async)?.length > 0">
+        <ion-list-header>Bakeries</ion-list-header>
+        <ion-item *ngFor="let bakery of (adminBakeries$ | async)">
+            <ion-label>
+                <h2>{{bakery.name}}</h2>
+                <h3 *ngIf="bakery.description">{{bakery.description}}</h3>
+            </ion-label>
+        </ion-item>
+    </ion-list>
+</ion-content>

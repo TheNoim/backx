@@ -1,0 +1,46 @@
+<ion-menu content-id="bakery-main-content">
+    <ion-header>
+        <ion-toolbar color="primary">
+            <ion-title>BackX</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+        <ion-list>
+            <ion-item *ngIf="userSettings$ | async as userSettings">
+                <ion-label>
+                    <h2>{{ userSettings.fullName }}</h2>
+                    <h3 *ngIf="user$ | async as user">{{ user.email }}</h3>
+                </ion-label>
+                <ion-fab-button size="small" (click)="logout()">
+                    <ion-icon name="log-out-outline"></ion-icon>
+                </ion-fab-button>
+            </ion-item>
+            <ion-list-header> Navigate </ion-list-header>
+            <ion-menu-toggle auto-hide="true">
+                <ion-item button>
+                    <ion-icon slot="start" name="home"></ion-icon>
+                    <ion-label> Home </ion-label>
+                </ion-item>
+            </ion-menu-toggle>
+        </ion-list>
+    </ion-content>
+</ion-menu>
+
+<ion-content id="bakery-main-content">
+    <ion-header>
+        <ion-toolbar>
+            <ion-buttons slot="start">
+                <ion-menu-toggle>
+                    <ion-button>
+                        <ion-icon slot="icon-only" name="menu"></ion-icon>
+                    </ion-button>
+                </ion-menu-toggle>
+            </ion-buttons>
+            <ion-title>Header</ion-title>
+        </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+        <ion-router-outlet id="bakery-content"></ion-router-outlet>
+    </ion-content>
+</ion-content>
