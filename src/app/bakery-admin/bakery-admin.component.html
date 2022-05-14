@@ -1,0 +1,21 @@
+
+<ion-content id="bakery-admin-main-content" *ngIf="bakeryUsers$ | async as allUsers">
+    <ion-list>
+        <ion-list-header>Admins</ion-list-header>
+        <ion-item *ngFor="let admin of allUsers.admins">
+            <ion-label>
+                <h2>{{admin.fullName ?? "No name"}}</h2>
+                <h3>{{admin.email}}</h3>
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list>
+        <ion-list-header>Users</ion-list-header>
+        <ion-item *ngFor="let user of allUsers.users">
+            <ion-label>
+                <h2>{{user.fullName ?? "No name"}}</h2>
+                <h3>{{user.email}}</h3>
+            </ion-label>
+        </ion-item>
+    </ion-list>
+</ion-content>

@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+    match /databases/{database}/documents {
+        function isAdmin(userId, bakery) {
+            return userId in bakery.admins;
+        }
+
+        function isUserOrAdmin(userId, bakery) {
+            let isUser = userId in bakery.users;
+            let isAdmin = isAdmin(userId, bakery);
+            return isUser || isAdmin;
+        }
+
+        match /{document=**} {
+            allow read, write: if false;
+        }
+
+        match /bakery/{bakery} {
+            allow read: if request.auth != null && isUserOrAdmin(request.auth.uid, resource.data);
+
+            allow write: if request.auth != null && request.auth.uid in resource.data.admins;
+        }
+
+        match /recipe/{recipe} {
+            allow read: if request.auth != null && isUserOrAdmin(request.auth.uid, get(/databases/$(database)/documents/bakery/$(resource.data.bakery)).data);
+
+            allow write: if request.auth != null && isAdmin(request.auth.uid, get(/databases/$(database)/documents/bakery/$(resource.data.bakery)).data);
+        }
+
+        function hasIsInSameBakery(toReadUser, readingUser) {
+
+        }
+
+        match /user/{userId} {
+            allow read: if request.auth != null;
+
+            allow write: if request.auth != null && userId == request.auth.uid;
+
+            // Only cloud functions should update this field
+            match /bakeries {
+                allow write: if false;
+                allow read: if request.auth != null && userId == request.auth.uid;
+            }
+        }
+    }
+}

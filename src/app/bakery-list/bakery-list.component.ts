@@ -3,13 +3,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { filter, map, mergeMap } from 'rxjs/operators';
-
-interface Bakery {
-    admins: string[];
-    name: string;
-    users: string[];
-    description?: string;
-}
+import { Bakery } from '../interfaces';
 
 @Component({
     selector: 'app-bakery-list',
@@ -28,8 +22,9 @@ export class BakeryListComponent implements OnInit {
                     ref.where('users', 'array-contains', user.uid)
                 )
             ),
-            mergeMap((bakeries) => bakeries.valueChanges())
+            mergeMap((bakeries) => bakeries.valueChanges({ idField: 'id' }))
         );
+        /* Filter all bakeries where the user is not admin */
         this.bakeries$ = bakeries$.pipe(
             map((bakeries) =>
                 auth.user.pipe(
@@ -43,6 +38,7 @@ export class BakeryListComponent implements OnInit {
             ),
             mergeMap((bakeries) => bakeries)
         );
+        /* Filter all bakeries where the user is admin */
         this.adminBakeries$ = bakeries$.pipe(
             map((bakeries) =>
                 auth.user.pipe(

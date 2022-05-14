@@ -11,6 +11,8 @@ import { provideStorage, getStorage } from '@angular/fire/storage';
 import { SETTINGS as AUTH_SETTINGS } from '@angular/fire/compat/auth';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { AppComponent } from './app.component';
+import { getFunctions, provideFunctions } from '@angular/fire/functions';
+import { REGION } from '@angular/fire/compat/functions';
 
 @NgModule({
     declarations: [AppComponent],
@@ -25,6 +27,7 @@ import { AppComponent } from './app.component';
         provideAuth(() => getAuth()),
         provideFirestore(() => getFirestore()),
         provideStorage(() => getStorage()),
+        provideFunctions(() => getFunctions()),
     ],
     providers: [
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
@@ -33,6 +36,7 @@ import { AppComponent } from './app.component';
             useValue: { appVerificationDisabledForTesting: true },
         },
         { provide: FIREBASE_OPTIONS, useValue: environment.firebase },
+        { provide: REGION, useValue: 'europe-west1' },
     ],
     bootstrap: [AppComponent],
 })
