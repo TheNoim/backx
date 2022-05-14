@@ -1,0 +1,7 @@
+{
+  "name": "BackX",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
