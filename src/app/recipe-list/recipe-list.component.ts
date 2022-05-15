@@ -1,11 +1,13 @@
 import { Component, OnDestroy } from '@angular/core';
 import { RecipeListService } from './recipe-list.service';
 import { filter, map, switchMap } from 'rxjs/operators';
-import { Observable, Subscription } from 'rxjs';
+import { combineLatest, Observable, Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { Bakery, Recipe } from '../interfaces';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { SubscribableTitleServiceService } from '../subscribable-title-service.service';
+import { RecipeEditFabService } from '../recipe-edit-fab/recipe-edit-fab.service';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Component({
     selector: 'app-recipe-list',
@@ -22,7 +24,9 @@ export class RecipeListComponent implements OnDestroy {
         private readonly recipeListService: RecipeListService,
         private readonly route: ActivatedRoute,
         private afs: AngularFirestore,
-        private titleService: SubscribableTitleServiceService
+        private titleService: SubscribableTitleServiceService,
+        private recipeFabService: RecipeEditFabService,
+        private auth: AngularFireAuth
     ) {
         this.bakeryId$ = recipeListService.refreshToken$.pipe(
             switchMap(() =>
@@ -30,16 +34,23 @@ export class RecipeListComponent implements OnDestroy {
             )
         );
 
-        this.bakerySubscription = this.bakeryId$
-            .pipe(
+        this.bakerySubscription = combineLatest([
+            this.bakeryId$.pipe(
                 filter((bakeryId) => !!bakeryId),
                 switchMap((bakeryId) =>
-                    afs.doc<Bakery>(`bakery/${bakeryId}`).valueChanges()
+                    afs
+                        .doc<Bakery>(`bakery/${bakeryId}`)
+                        .valueChanges({ idField: 'id' })
                 )
-            )
-            .subscribe((bakery) => {
-                this.titleService.setTitle(`Recipes for Bakery ${bakery.name}`);
-            });
+            ),
+            auth.user,
+        ]).subscribe(([bakery, user]) => {
+            this.titleService.setTitle(`Recipes for Bakery ${bakery.name}`);
+            // Only show edit button if user is admin
+            if (bakery.admins.includes(user.uid)) {
+                this.recipeFabService.showButton(null, bakery.id);
+            }
+        });
 
         this.recipes$ = this.bakeryId$.pipe(
             switchMap((bakeryId) =>
