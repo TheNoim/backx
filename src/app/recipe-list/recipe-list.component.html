@@ -1,0 +1,22 @@
+<ion-content
+    id="bakery-recipe-list-main-content"
+    *ngIf="recipes$ | async as recipes; else indicator"
+>
+    <ion-list>
+        <ion-list-header>Recipes</ion-list-header>
+        <ion-item *ngFor="let recipe of recipes">
+            <ion-label>
+                <h2>{{ recipe.name }}</h2>
+                <h3 *ngIf="recipe.shortDescription">
+                    {{ recipe.shortDescription }}
+                </h3>
+            </ion-label>
+        </ion-item>
+    </ion-list>
+</ion-content>
+
+<ng-template #indicator>
+    <ion-content id="bakery-list-main-content-loading" class="ion-text-center">
+        <ion-spinner></ion-spinner>
+    </ion-content>
+</ng-template>

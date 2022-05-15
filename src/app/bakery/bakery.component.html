@@ -37,11 +37,13 @@
                     </ion-button>
                 </ion-menu-toggle>
             </ion-buttons>
-            <ion-title>Header</ion-title>
+            <ion-title>{{ title$ | async }}</ion-title>
         </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
         <ion-router-outlet id="bakery-content"></ion-router-outlet>
-        <app-bakery-admin-user-add-fab slot="fixed"></app-bakery-admin-user-add-fab>
+        <app-bakery-admin-user-add-fab
+            slot="fixed"
+        ></app-bakery-admin-user-add-fab>
     </ion-content>
 </ion-content>

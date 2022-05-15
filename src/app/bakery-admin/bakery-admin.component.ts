@@ -1,13 +1,14 @@
 import { Component, HostListener, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
-import { filter, map, mergeMap, switchMap } from 'rxjs/operators';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { Bakery, BakeryUserListFunctionResponse } from '../interfaces';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { BakeryAdminUserAddFabService } from '../bakery-admin-user-add-fab/bakery-admin-user-add-fab.service';
 import { AlertController, LoadingController } from '@ionic/angular';
+import { SubscribableTitleServiceService } from '../subscribable-title-service.service';
 
 @Component({
     selector: 'app-bakery-admin',
@@ -20,6 +21,7 @@ export class BakeryAdminComponent implements OnDestroy {
     bakeryUsers$: Observable<BakeryUserListFunctionResponse>;
 
     bakeryIdSubscription: Subscription;
+    bakerySubscription: Subscription;
 
     constructor(
         private route: ActivatedRoute,
@@ -28,7 +30,8 @@ export class BakeryAdminComponent implements OnDestroy {
         private fns: AngularFireFunctions,
         public bakeryAdminUserAddFabService: BakeryAdminUserAddFabService,
         public loadingController: LoadingController,
-        public alertController: AlertController
+        public alertController: AlertController,
+        private titleService: SubscribableTitleServiceService
     ) {
         this.bakeryId$ = bakeryAdminUserAddFabService.refreshToken$.pipe(
             switchMap(() =>
@@ -37,22 +40,24 @@ export class BakeryAdminComponent implements OnDestroy {
         );
         this.bakery$ = this.bakeryId$.pipe(
             filter((bakeryId) => !!bakeryId),
-            map((bakeryId) =>
+            switchMap((bakeryId) =>
                 afs.doc<Bakery>(`bakery/${bakeryId}`).valueChanges()
-            ),
-            mergeMap((bakery) => bakery)
+            )
         );
         this.bakeryUsers$ = this.bakeryId$.pipe(
             filter((bakeryId) => !!bakeryId),
-            map((bakeryId) =>
+            switchMap((bakeryId) =>
                 fns.httpsCallable('listBakeryUsers')({ bakeryId })
-            ),
-            mergeMap((result) => result)
+            )
         );
 
         // Update bakeryId for the user add fab
         this.bakeryIdSubscription = this.bakeryId$.subscribe((bakeryId) => {
             this.bakeryAdminUserAddFabService.showButton(bakeryId);
+        });
+
+        this.bakerySubscription = this.bakery$.subscribe((bakery) => {
+            this.titleService.setTitle(`Admin: ${bakery.name}`);
         });
     }
 
@@ -61,6 +66,7 @@ export class BakeryAdminComponent implements OnDestroy {
     ngOnDestroy(): void {
         this.bakeryAdminUserAddFabService.hideButton();
         this.bakeryIdSubscription.unsubscribe();
+        this.bakerySubscription.unsubscribe();
     }
 
     async removeUser(email: string, dePromote: boolean = false) {

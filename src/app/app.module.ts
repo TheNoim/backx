@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
@@ -13,6 +13,7 @@ import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { AppComponent } from './app.component';
 import { getFunctions, provideFunctions } from '@angular/fire/functions';
 import { REGION } from '@angular/fire/compat/functions';
+import { SubscribableTitleServiceService } from './subscribable-title-service.service';
 
 @NgModule({
     declarations: [AppComponent],
@@ -37,6 +38,8 @@ import { REGION } from '@angular/fire/compat/functions';
         },
         { provide: FIREBASE_OPTIONS, useValue: environment.firebase },
         { provide: REGION, useValue: 'europe-west1' },
+        Title,
+        SubscribableTitleServiceService,
     ],
     bootstrap: [AppComponent],
 })

@@ -1,18 +1,21 @@
-<ion-content id="bakery-list-main-content">
+<ion-content
+    id="bakery-list-main-content"
+    *ngIf="combined$ | async; else indicator"
+>
     <!-- Only list bakeries where the user is admin -->
     <ion-list *ngIf="(adminBakeries$ | async)?.length > 0">
         <ion-list-header>Bakeries where you are an admin</ion-list-header>
-        <ion-item *ngFor="let bakery of (adminBakeries$ | async)">
+        <ion-item *ngFor="let bakery of adminBakeries$ | async">
             <ion-label>
-                <h2>{{bakery.name}}</h2>
-                <h3 *ngIf="bakery.description">{{bakery.description}}</h3>
+                <h2>{{ bakery.name }}</h2>
+                <h3 *ngIf="bakery.description">{{ bakery.description }}</h3>
             </ion-label>
             <!-- Bakery admin link -->
             <ion-fab-button [routerLink]="['admin', bakery.id]" color="danger">
                 <ion-icon name="settings-outline"></ion-icon>
             </ion-fab-button>
             <!-- Just open bakery -->
-            <ion-fab-button >
+            <ion-fab-button [routerLink]="[bakery.id, 'recipes']">
                 <ion-icon name="caret-forward-outline"></ion-icon>
             </ion-fab-button>
         </ion-item>
@@ -20,15 +23,20 @@
     <!-- All bakeries where the user is not admin -->
     <ion-list *ngIf="(bakeries$ | async)?.length > 0">
         <ion-list-header>Bakeries</ion-list-header>
-        <ion-item *ngFor="let bakery of (adminBakeries$ | async)">
+        <ion-item *ngFor="let bakery of bakeries$ | async">
             <ion-label>
-                <h2>{{bakery.name}}</h2>
-                <h3 *ngIf="bakery.description">{{bakery.description}}</h3>
+                <h2>{{ bakery.name }}</h2>
+                <h3 *ngIf="bakery.description">{{ bakery.description }}</h3>
             </ion-label>
             <!-- Just open bakery -->
-            <ion-fab-button >
+            <ion-fab-button [routerLink]="[bakery.id, 'recipes']">
                 <ion-icon name="caret-forward-outline"></ion-icon>
             </ion-fab-button>
         </ion-item>
     </ion-list>
 </ion-content>
+<ng-template #indicator>
+    <ion-content id="bakery-list-main-content-loading" class="ion-text-center">
+        <ion-spinner></ion-spinner>
+    </ion-content>
+</ng-template>
