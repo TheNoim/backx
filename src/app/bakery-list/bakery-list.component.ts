@@ -1,29 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, Observable, Subscription } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { filter, map, mergeMap, switchMap } from 'rxjs/operators';
 import { Bakery } from '../interfaces';
 import { SubscribableTitleServiceService } from '../subscribable-title-service.service';
 import { BakeryAddFabServiceService } from '../bakery-add-fab/bakery-add-fab-service.service';
+import { nestedRouteEventHelper } from '../util';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-bakery-list',
     templateUrl: './bakery-list.component.html',
     styleUrls: ['./bakery-list.component.scss'],
 })
-export class BakeryListComponent {
+export class BakeryListComponent implements OnDestroy {
     bakeries$: Observable<Bakery[]>;
     adminBakeries$: Observable<Bakery[]>;
 
     // Just here for the loading spinner
     combined$: Observable<[Bakery[], Bakery[]]>;
 
+    routeSubscription: Subscription;
+
     constructor(
         private afs: AngularFirestore,
         public auth: AngularFireAuth,
         private titleService: SubscribableTitleServiceService,
-        private bakeryAddFabService: BakeryAddFabServiceService
+        private bakeryAddFabService: BakeryAddFabServiceService,
+        private activatedRoute: ActivatedRoute,
+        private router: Router
     ) {
         const bakeries$ = auth.user.pipe(
             filter((user) => !!user),
@@ -61,7 +67,17 @@ export class BakeryListComponent {
             )
         );
         this.combined$ = combineLatest([this.adminBakeries$, this.bakeries$]);
-        this.titleService.setTitle('Bakery list');
-        bakeryAddFabService.showButton();
+
+        this.routeSubscription = nestedRouteEventHelper(
+            this.activatedRoute,
+            this.router
+        ).subscribe(() => {
+            this.titleService.setTitle('Bakery list');
+            bakeryAddFabService.showButton();
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.routeSubscription.unsubscribe();
     }
 }
