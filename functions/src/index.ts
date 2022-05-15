@@ -17,8 +17,7 @@ export const saveUserEmailInSettings = functions
     .region('europe-west1')
     .auth.user()
     .onCreate(async (user) => {
-        await db.collection('user').add({
-            id: user.uid,
+        await db.collection('user').doc(user.uid).set({
             email: user.email,
             fullName: user.displayName,
             bakeries: [],
