@@ -13,6 +13,9 @@ service cloud.firestore {
 
         match /{document=**} {
             allow read, write: if false;
+
+            // Do not allow to create own documents
+            allow create: if false;
         }
 
         match /bakery/{bakery} {
