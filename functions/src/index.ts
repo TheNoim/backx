@@ -248,3 +248,108 @@ export const deleteRecipe = functions
 
         return true;
     });
+
+export const deleteBakery = functions
+    .region('europe-west1')
+    .https.onCall(async (data, context) => {
+        const bakery = await bakeryManagementCheck(data, context);
+
+        // Remove bakeryId from all users
+        await Promise.all(
+            bakery.users.map(async (userId) => {
+                const userSettings = await resolveUserSettingForUserId(userId);
+                if (userSettings) {
+                    await db.doc(`user/${userId}`).set({
+                        ...userSettings,
+                        bakeries: (userSettings.bakeries ?? []).filter(
+                            (bakeryId) => bakeryId !== bakery.bakeryId
+                        ),
+                    });
+                }
+            })
+        );
+
+        // Delete bakery
+        await db.collection('bakery').doc(bakery.bakeryId).delete();
+
+        return true;
+    });
+
+// Create a new bakery for the current user
+export const createBakery = functions
+    .region('europe-west1')
+    .https.onCall(async (data, context) => {
+        const { name, description } = data ?? {};
+
+        const uid = context.auth?.uid;
+        // Only authenticated users
+        if (!uid) {
+            throw new functions.https.HttpsError(
+                'failed-precondition',
+                'The function must be called while authenticated.'
+            );
+        }
+
+        if (!name || typeof name !== 'string') {
+            throw new functions.https.HttpsError(
+                'failed-precondition',
+                'You need to provide a name.'
+            );
+        }
+
+        if (!description || typeof description !== 'string') {
+            throw new functions.https.HttpsError(
+                'failed-precondition',
+                'You need to provide a description.'
+            );
+        }
+
+        const bakery = await db.collection('bakery').add({
+            admins: [uid],
+            users: [uid],
+            name,
+            description,
+        });
+
+        return {
+            id: bakery.id,
+            ...(await bakery.get()).data(),
+        };
+    });
+
+export const editBakery = functions
+    .region('europe-west1')
+    .https.onCall(async (data, context) => {
+        const { bakeryId, ...bakery } = await bakeryManagementCheck(
+            data,
+            context
+        );
+
+        const { name, description } = data ?? {};
+
+        const uid = context.auth?.uid;
+        // Only authenticated users
+        if (!uid) {
+            throw new functions.https.HttpsError(
+                'failed-precondition',
+                'The function must be called while authenticated.'
+            );
+        }
+
+        const updatePayload: Record<string, string> = {};
+
+        if (name && typeof name === 'string') {
+            updatePayload.name = name;
+        }
+
+        if (description && typeof description === 'string') {
+            updatePayload.description = description;
+        }
+
+        await db.doc(`bakery/${bakeryId}`).set({
+            ...bakery,
+            ...updatePayload,
+        });
+
+        return true;
+    });

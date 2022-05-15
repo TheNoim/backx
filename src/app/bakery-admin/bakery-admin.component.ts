@@ -9,6 +9,7 @@ import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { BakeryAdminUserAddFabService } from '../bakery-admin-user-add-fab/bakery-admin-user-add-fab.service';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { SubscribableTitleServiceService } from '../subscribable-title-service.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
     selector: 'app-bakery-admin',
@@ -22,6 +23,11 @@ export class BakeryAdminComponent implements OnDestroy {
 
     bakeryIdSubscription: Subscription;
     bakerySubscription: Subscription;
+
+    settingsFormGroup = new FormGroup({
+        name: new FormControl('', Validators.required),
+        description: new FormControl('', Validators.required),
+    });
 
     constructor(
         private route: ActivatedRoute,
@@ -58,6 +64,10 @@ export class BakeryAdminComponent implements OnDestroy {
 
         this.bakerySubscription = this.bakery$.subscribe((bakery) => {
             this.titleService.setTitle(`Admin: ${bakery.name}`);
+            this.settingsFormGroup.patchValue({
+                name: bakery.name,
+                description: bakery.description,
+            });
         });
     }
 
@@ -82,6 +92,32 @@ export class BakeryAdminComponent implements OnDestroy {
                 bakeryId: this.bakeryAdminUserAddFabService.bakeryId,
             }).toPromise();
             this.bakeryAdminUserAddFabService.reloadUserData();
+        } catch (e) {
+            console.log({ e });
+
+            const alert = await this.alertController.create({
+                header: 'Error',
+                message: e?.message ?? 'An unknown error occurred',
+                buttons: ['OK'],
+            });
+
+            await alert.present();
+        } finally {
+            await loading.dismiss();
+        }
+    }
+
+    async saveSettings() {
+        const loading = await this.loadingController.create({
+            message: 'Please wait...',
+        });
+        await loading.present();
+        try {
+            const callable = this.fns.httpsCallable('editBakery');
+            await callable({
+                ...this.settingsFormGroup.value,
+                bakeryId: this.bakeryAdminUserAddFabService.bakeryId,
+            }).toPromise();
         } catch (e) {
             console.log({ e });
 
