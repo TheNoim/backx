@@ -221,3 +221,30 @@ export const createOrEditRecipe = functions
 
         return true;
     });
+
+export const deleteRecipe = functions
+    .region('europe-west1')
+    .https.onCall(async (data, context) => {
+        const { bakeryId, recipeId } = data ?? {};
+
+        if (!recipeId || typeof recipeId !== 'string') {
+            throw new functions.https.HttpsError(
+                'failed-precondition',
+                'The function must be called with a recipeId.'
+            );
+        }
+
+        // Check whether the user even has the permission to delete a recipe
+        await bakeryManagementCheck({ bakeryId }, context);
+
+        const recipeSnapshot = await db.doc(`recipe/${recipeId}`).get();
+        if (!recipeSnapshot.exists) {
+            throw new functions.https.HttpsError(
+                'not-found',
+                'Recipe with id ' + recipeId + ' not found.'
+            );
+        }
+        await db.doc(`recipe/${recipeId}`).delete();
+
+        return true;
+    });

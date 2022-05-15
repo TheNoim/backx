@@ -15,6 +15,7 @@ import {
     ModalController,
 } from '@ionic/angular';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-recipe-edit-form',
@@ -42,7 +43,8 @@ export class RecipeEditFormComponent implements OnInit, OnDestroy {
         public loadingController: LoadingController,
         private modalController: ModalController,
         private alertController: AlertController,
-        private fns: AngularFireFunctions
+        private fns: AngularFireFunctions,
+        private router: Router
     ) {}
 
     async ngOnInit() {
@@ -84,6 +86,37 @@ export class RecipeEditFormComponent implements OnInit, OnDestroy {
                 recipeId: this.recipeId,
                 recipe: this.recipeFormGroup.value,
             }).toPromise();
+        } catch (e) {
+            console.log({ e });
+
+            const alert = await this.alertController.create({
+                header: 'Error',
+                message: e?.message ?? 'An unknown error occurred',
+                buttons: ['OK'],
+            });
+
+            await alert.present();
+        } finally {
+            await loading.dismiss();
+        }
+    }
+
+    async delete() {
+        const loading = await this.loadingController.create({
+            message: 'Please wait...',
+        });
+        await loading.present();
+        try {
+            const callable = this.fns.httpsCallable('deleteRecipe');
+            await callable({
+                bakeryId: this.bakeryId,
+                recipeId: this.recipeId,
+            }).toPromise();
+
+            await Promise.all([
+                this.dismissModal(),
+                this.router.navigateByUrl(`/bakery/${this.bakeryId}/recipes`),
+            ]);
         } catch (e) {
             console.log({ e });
 
