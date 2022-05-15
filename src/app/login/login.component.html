@@ -4,7 +4,6 @@
     </ion-toolbar>
 </ion-header>
 
-
 <ion-content class="ion-padding" [fullscreen]="true">
     <h1>Welcome to BackX</h1>
     <p>Before you can start, you need to login with your account.</p>
@@ -12,13 +11,27 @@
     <form [formGroup]="loginGroup" (ngSubmit)="login()">
         <ion-item>
             <ion-label>E-Mail</ion-label>
-            <ion-input formControlName="email" type="email" required email [disabled]="loading"></ion-input>
+            <ion-input
+                formControlName="email"
+                type="email"
+                required
+                email
+            ></ion-input>
         </ion-item>
         <ion-item>
             <ion-label>Password</ion-label>
-            <ion-input formControlName="password" type="password" required [disabled]="loading"></ion-input>
+            <ion-input
+                formControlName="password"
+                type="password"
+                required
+            ></ion-input>
         </ion-item>
 
-        <ion-button type="submit" [disabled]="!loginGroup.valid || loading">Login</ion-button>
+        <ion-button type="submit" [disabled]="!loginGroup.valid"
+            >Login</ion-button
+        >
+        <ion-button (click)="signup()" [disabled]="!loginGroup.valid"
+            >Signup</ion-button
+        >
     </form>
 </ion-content>

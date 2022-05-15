@@ -63,7 +63,8 @@ export class BakeryComponent implements OnDestroy {
 
     async logout() {
         await this.auth.signOut();
-        await this.router.navigateByUrl('/login');
+        // Hard redirect to clear cache
+        window.location.href = '/login';
     }
 
     ngOnDestroy(): void {
