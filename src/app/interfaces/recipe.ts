@@ -8,7 +8,8 @@ export interface Recipe {
     id: string;
 }
 
-export type Unit = 'g' | 'kg' | 'ml' | 'l';
+export const VALID_UNITS = ['g', 'kg', 'ml', 'l'] as const;
+export type Unit = typeof VALID_UNITS[number];
 
 export interface Ingredient {
     count: number;

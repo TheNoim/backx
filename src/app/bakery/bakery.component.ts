@@ -7,6 +7,7 @@ import type firebase from 'firebase/compat/app';
 import { NavigationEnd, Router } from '@angular/router';
 import { SubscribableTitleServiceService } from '../subscribable-title-service.service';
 import { BakeryAdminUserAddFabService } from '../bakery-admin-user-add-fab/bakery-admin-user-add-fab.service';
+import { RecipeEditFabService } from '../recipe-edit-fab/recipe-edit-fab.service';
 
 export interface UserSettings {
     fullName?: string;
@@ -28,7 +29,8 @@ export class BakeryComponent implements OnDestroy {
         public auth: AngularFireAuth,
         private router: Router,
         private titleService: SubscribableTitleServiceService,
-        public bakeryAdminUserAddFabService: BakeryAdminUserAddFabService
+        private bakeryAdminUserAddFabService: BakeryAdminUserAddFabService,
+        private recipeEditFabService: RecipeEditFabService
     ) {
         this.user$ = auth.user;
         this.userSettings$ = auth.user.pipe(
@@ -45,6 +47,9 @@ export class BakeryComponent implements OnDestroy {
             .subscribe((event: NavigationEnd) => {
                 if (!event.urlAfterRedirects.includes('admin')) {
                     this.bakeryAdminUserAddFabService.hideButton();
+                }
+                if (!event.urlAfterRedirects.includes('recipes')) {
+                    this.recipeEditFabService.hideButton();
                 }
             });
     }

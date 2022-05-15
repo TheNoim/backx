@@ -23,8 +23,9 @@
     <ion-list>
         <ion-list-header>Steps</ion-list-header>
         <ion-item *ngFor="let step of recipe.steps; index as index">
+            <ion-note slot="start">{{ index + 1 }}.</ion-note>
             <ion-label>
-                <b>{{ index + 1 }}.</b> {{ step }}
+                {{ step }}
             </ion-label>
         </ion-item>
     </ion-list>

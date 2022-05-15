@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { BakeryComponent } from './bakery.component';
 import { BakeryRoutingModule } from './bakery-routing.module';
 import { BakeryAdminUserAddFabComponentModule } from '../bakery-admin-user-add-fab/bakery-admin-user-add-fab.module';
+import { RecipeEditFabComponentModule } from '../recipe-edit-fab/recipe-edit-fab.module';
 
 @NgModule({
     imports: [
@@ -15,6 +16,7 @@ import { BakeryAdminUserAddFabComponentModule } from '../bakery-admin-user-add-f
         IonicModule,
         BakeryRoutingModule,
         BakeryAdminUserAddFabComponentModule,
+        RecipeEditFabComponentModule,
     ],
     declarations: [BakeryComponent],
     exports: [BakeryComponent],

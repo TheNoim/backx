@@ -1,0 +1,10 @@
+<ion-fab
+    vertical="top"
+    horizontal="end"
+    edge
+    *ngIf="recipeEditFabService.shouldShowButton"
+>
+    <ion-fab-button (click)="editOrCreate()">
+        <ion-icon name="pencil-outline"></ion-icon>
+    </ion-fab-button>
+</ion-fab>

@@ -18,13 +18,15 @@ service cloud.firestore {
         match /bakery/{bakery} {
             allow read: if request.auth != null && isUserOrAdmin(request.auth.uid, resource.data);
 
-            allow write: if request.auth != null && request.auth.uid in resource.data.admins;
+            // Only allow update via firebase function
+            allow write: if false;
         }
 
         match /recipe/{recipe} {
             allow read: if request.auth != null && isUserOrAdmin(request.auth.uid, get(/databases/$(database)/documents/bakery/$(resource.data.bakery)).data);
 
-            allow write: if request.auth != null && isAdmin(request.auth.uid, get(/databases/$(database)/documents/bakery/$(resource.data.bakery)).data);
+            // Only allow update via firebase function
+            allow write: if false;
         }
 
         match /user/{userId} {

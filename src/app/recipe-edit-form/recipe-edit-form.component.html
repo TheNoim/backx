@@ -1,0 +1,119 @@
+<ion-header translucent>
+    <ion-toolbar>
+        <ion-title>{{ recipeId ? "Edit recipe" : "Add recipe" }}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="dismissModal()">Close</ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content fullscreen class="ion-padding">
+    <form [formGroup]="recipeFormGroup" (ngSubmit)="submit()">
+        <ion-list>
+            <!-- General information -->
+
+            <ion-item-group>
+                <ion-item-divider>
+                    <ion-label>General information</ion-label>
+                </ion-item-divider>
+                <ion-item>
+                    <ion-label>Name</ion-label>
+                    <ion-input formControlName="name"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Description</ion-label>
+                    <ion-textarea formControlName="description"></ion-textarea>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Short description</ion-label>
+                    <ion-textarea formControlName="description"></ion-textarea>
+                </ion-item>
+            </ion-item-group>
+
+            <!-- Ingredients -->
+
+            <ion-item-group>
+                <ion-item-divider>
+                    <ion-label>Ingredients</ion-label>
+                </ion-item-divider>
+            </ion-item-group>
+
+            <ion-item-group
+                *ngFor="
+                    let control of getFormArray('ingredients').controls;
+                    index as i
+                "
+            >
+                <ion-item>
+                    <ion-label>{{ i + 1 }}. Name</ion-label>
+                    <ion-input
+                        type="text"
+                        [formControl]="getFormControllerByKey('name', control)"
+                    ></ion-input>
+                    <ion-button
+                        (click)="removeFormArrayController('ingredients', i)"
+                        slot="end"
+                        size="small"
+                    >
+                        <ion-icon slot="icon-only" name="remove"></ion-icon>
+                    </ion-button>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Count</ion-label>
+                    <ion-input
+                        type="number"
+                        [formControl]="getFormControllerByKey('count', control)"
+                    ></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Unit</ion-label>
+                    <ion-input
+                        type="text"
+                        [formControl]="getFormControllerByKey('unit', control)"
+                    ></ion-input>
+                </ion-item>
+            </ion-item-group>
+            <div class="full-width ion-text-center">
+                <ion-button (click)="addIngredient()" size="small">
+                    <ion-icon slot="icon-only" name="add"></ion-icon>
+                </ion-button>
+            </div>
+
+            <!-- Steps -->
+
+            <ion-item-group>
+                <ion-item-divider>
+                    <ion-label>Steps</ion-label>
+                </ion-item-divider>
+                <ion-item
+                    *ngFor="
+                        let control of getFormArray('steps').controls;
+                        index as i
+                    "
+                >
+                    <ion-label>{{ i + 1 }}</ion-label>
+                    <ion-input
+                        type="text"
+                        [formControl]="getFormController(control)"
+                    ></ion-input>
+                    <ion-button
+                        (click)="removeFormArrayController('step', i)"
+                        slot="end"
+                        size="small"
+                    >
+                        <ion-icon slot="icon-only" name="remove"></ion-icon>
+                    </ion-button>
+                </ion-item>
+            </ion-item-group>
+            <div class="full-width ion-text-center">
+                <ion-button (click)="addStep()" size="small">
+                    <ion-icon slot="icon-only" name="add"></ion-icon>
+                </ion-button>
+            </div>
+        </ion-list>
+        <div class="full-width ion-text-right">
+            <ion-button type="submit" [disabled]="!recipeFormGroup.valid">
+                Save
+            </ion-button>
+        </div>
+    </form>
+</ion-content>

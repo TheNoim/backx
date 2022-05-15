@@ -189,3 +189,35 @@ export const removeUserFromBakery = functions
 
         await db.doc(`bakery/${bakeryId}`).set(bakery);
     });
+
+export const createOrEditRecipe = functions
+    .region('europe-west1')
+    .https.onCall(async (data, context) => {
+        const { bakeryId, recipe, recipeId } = data ?? {};
+
+        // Check whether the user even has the permission to edit or create a recipe
+        await bakeryManagementCheck({ bakeryId }, context);
+
+        // Update recipe
+        if (recipeId && typeof recipeId === 'string') {
+            const recipeSnapshot = await db.doc(`recipe/${recipeId}`).get();
+            if (!recipeSnapshot.exists) {
+                throw new functions.https.HttpsError(
+                    'not-found',
+                    'Recipe with id ' + recipeId + ' not found.'
+                );
+            }
+            await db.doc(`recipe/${recipeId}`).set({
+                ...recipe,
+                bakery: bakeryId,
+            });
+        } else {
+            // Create new recipe
+            await db.collection('recipe').add({
+                ...recipe,
+                bakery: bakeryId,
+            });
+        }
+
+        return true;
+    });
