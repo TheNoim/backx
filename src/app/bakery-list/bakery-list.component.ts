@@ -5,6 +5,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { filter, map, mergeMap, switchMap } from 'rxjs/operators';
 import { Bakery } from '../interfaces';
 import { SubscribableTitleServiceService } from '../subscribable-title-service.service';
+import { BakeryAddFabServiceService } from '../bakery-add-fab/bakery-add-fab-service.service';
 
 @Component({
     selector: 'app-bakery-list',
@@ -21,7 +22,8 @@ export class BakeryListComponent {
     constructor(
         private afs: AngularFirestore,
         public auth: AngularFireAuth,
-        private titleService: SubscribableTitleServiceService
+        private titleService: SubscribableTitleServiceService,
+        private bakeryAddFabService: BakeryAddFabServiceService
     ) {
         const bakeries$ = auth.user.pipe(
             filter((user) => !!user),
@@ -60,5 +62,6 @@ export class BakeryListComponent {
         );
         this.combined$ = combineLatest([this.adminBakeries$, this.bakeries$]);
         this.titleService.setTitle('Bakery list');
+        bakeryAddFabService.showButton();
     }
 }

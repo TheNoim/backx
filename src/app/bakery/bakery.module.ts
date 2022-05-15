@@ -8,6 +8,7 @@ import { BakeryComponent } from './bakery.component';
 import { BakeryRoutingModule } from './bakery-routing.module';
 import { BakeryAdminUserAddFabComponentModule } from '../bakery-admin-user-add-fab/bakery-admin-user-add-fab.module';
 import { RecipeEditFabComponentModule } from '../recipe-edit-fab/recipe-edit-fab.module';
+import { BakeryAddFabComponentModule } from '../bakery-add-fab/bakery-add-fab.module';
 
 @NgModule({
     imports: [
@@ -17,6 +18,7 @@ import { RecipeEditFabComponentModule } from '../recipe-edit-fab/recipe-edit-fab
         BakeryRoutingModule,
         BakeryAdminUserAddFabComponentModule,
         RecipeEditFabComponentModule,
+        BakeryAddFabComponentModule,
     ],
     declarations: [BakeryComponent],
     exports: [BakeryComponent],

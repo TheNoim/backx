@@ -269,6 +269,17 @@ export const deleteBakery = functions
             })
         );
 
+        // Delete all recipes
+        const recipes = await db
+            .collection('recipe')
+            .where('bakery', '==', bakery.bakeryId)
+            .get();
+        await Promise.all(
+            recipes.docs.map(async (recipe) => {
+                await db.collection('recipe').doc(recipe.id).delete();
+            })
+        );
+
         // Delete bakery
         await db.collection('bakery').doc(bakery.bakeryId).delete();
 

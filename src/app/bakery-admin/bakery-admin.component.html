@@ -19,6 +19,7 @@
             </ion-item>
         </ion-list>
         <div class="full-width ion-text-right">
+            <ion-button (click)="delete()" color="danger">Delete</ion-button>
             <ion-button type="submit" [disabled]="!settingsFormGroup.valid"
                 >Save</ion-button
             >

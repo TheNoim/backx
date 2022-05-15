@@ -1,5 +1,5 @@
 import { Component, HostListener, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { Bakery, BakeryUserListFunctionResponse } from '../interfaces';
@@ -37,7 +37,8 @@ export class BakeryAdminComponent implements OnDestroy {
         public bakeryAdminUserAddFabService: BakeryAdminUserAddFabService,
         public loadingController: LoadingController,
         public alertController: AlertController,
-        private titleService: SubscribableTitleServiceService
+        private titleService: SubscribableTitleServiceService,
+        private router: Router
     ) {
         this.bakeryId$ = bakeryAdminUserAddFabService.refreshToken$.pipe(
             switchMap(() =>
@@ -118,6 +119,32 @@ export class BakeryAdminComponent implements OnDestroy {
                 ...this.settingsFormGroup.value,
                 bakeryId: this.bakeryAdminUserAddFabService.bakeryId,
             }).toPromise();
+        } catch (e) {
+            console.log({ e });
+
+            const alert = await this.alertController.create({
+                header: 'Error',
+                message: e?.message ?? 'An unknown error occurred',
+                buttons: ['OK'],
+            });
+
+            await alert.present();
+        } finally {
+            await loading.dismiss();
+        }
+    }
+
+    async delete() {
+        const loading = await this.loadingController.create({
+            message: 'Please wait...',
+        });
+        await loading.present();
+        try {
+            const callable = this.fns.httpsCallable('deleteBakery');
+            await callable({
+                bakeryId: this.bakeryAdminUserAddFabService.bakeryId,
+            }).toPromise();
+            await this.router.navigateByUrl('/bakery');
         } catch (e) {
             console.log({ e });
 

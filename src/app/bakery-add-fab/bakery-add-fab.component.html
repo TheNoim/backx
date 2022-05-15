@@ -1,0 +1,52 @@
+<ion-fab
+    vertical="top"
+    horizontal="end"
+    edge
+    *ngIf="bakeryAddFabService.shouldShowButton"
+>
+    <ion-fab-button>
+        <ion-icon name="add" (click)="openModal()"></ion-icon>
+    </ion-fab-button>
+</ion-fab>
+
+<ion-modal
+    [isOpen]="addModalOpen"
+    [canDismiss]="true"
+    [presentingElement]="routerOutlet.nativeEl"
+    (didDismiss)="addModalOpen = false"
+>
+    <ng-template>
+        <ion-header translucent>
+            <ion-toolbar>
+                <ion-title>Create Bakery</ion-title>
+                <ion-buttons slot="end">
+                    <ion-button (click)="dismissModal()">Close</ion-button>
+                </ion-buttons>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content fullscreen class="ion-padding">
+            <form [formGroup]="addBakeryForm" (ngSubmit)="submit()">
+                <ion-list>
+                    <ion-item>
+                        <ion-label>Name</ion-label>
+                        <ion-input
+                            formControlName="name"
+                            type="text"
+                        ></ion-input>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label>Description</ion-label>
+                        <ion-input
+                            formControlName="description"
+                            type="text"
+                        ></ion-input>
+                    </ion-item>
+                </ion-list>
+                <br />
+                <ion-button type="submit" [disabled]="!addBakeryForm.valid"
+                    >Create</ion-button
+                >
+            </form>
+        </ion-content>
+    </ng-template>
+</ion-modal>

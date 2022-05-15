@@ -8,6 +8,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { SubscribableTitleServiceService } from '../subscribable-title-service.service';
 import { BakeryAdminUserAddFabService } from '../bakery-admin-user-add-fab/bakery-admin-user-add-fab.service';
 import { RecipeEditFabService } from '../recipe-edit-fab/recipe-edit-fab.service';
+import { BakeryAddFabServiceService } from '../bakery-add-fab/bakery-add-fab-service.service';
 
 export interface UserSettings {
     fullName?: string;
@@ -30,7 +31,8 @@ export class BakeryComponent implements OnDestroy {
         private router: Router,
         private titleService: SubscribableTitleServiceService,
         private bakeryAdminUserAddFabService: BakeryAdminUserAddFabService,
-        private recipeEditFabService: RecipeEditFabService
+        private recipeEditFabService: RecipeEditFabService,
+        private bakeryAddFabService: BakeryAddFabServiceService
     ) {
         this.user$ = auth.user;
         this.userSettings$ = auth.user.pipe(
@@ -50,6 +52,11 @@ export class BakeryComponent implements OnDestroy {
                 }
                 if (!event.urlAfterRedirects.includes('recipes')) {
                     this.recipeEditFabService.hideButton();
+                }
+                if (event.urlAfterRedirects !== '/bakery') {
+                    this.bakeryAddFabService.hideButton();
+                } else {
+                    this.bakeryAddFabService.showButton();
                 }
             });
     }
