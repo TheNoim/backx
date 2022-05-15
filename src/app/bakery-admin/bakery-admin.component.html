@@ -1,21 +1,43 @@
-
-<ion-content id="bakery-admin-main-content" *ngIf="bakeryUsers$ | async as allUsers">
+<ion-content
+    id="bakery-admin-main-content"
+    *ngIf="bakeryUsers$ | async as allUsers; else indicator"
+>
     <ion-list>
         <ion-list-header>Admins</ion-list-header>
         <ion-item *ngFor="let admin of allUsers.admins">
             <ion-label>
-                <h2>{{admin.fullName ?? "No name"}}</h2>
-                <h3>{{admin.email}}</h3>
+                <h2>{{ admin.fullName ?? "No name" }}</h2>
+                <h3>{{ admin.email }}</h3>
             </ion-label>
+            <ion-button
+                *ngIf="allUsers.admins.length > 1"
+                (click)="removeUser(admin.email, true)"
+            >
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
         </ion-item>
     </ion-list>
     <ion-list>
         <ion-list-header>Users</ion-list-header>
         <ion-item *ngFor="let user of allUsers.users">
             <ion-label>
-                <h2>{{user.fullName ?? "No name"}}</h2>
-                <h3>{{user.email}}</h3>
+                <h2>{{ user.fullName ?? "No name" }}</h2>
+                <h3>{{ user.email }}</h3>
             </ion-label>
+            <ion-button
+                *ngIf="allUsers.users.length > 1"
+                (click)="removeUser(user.email)"
+            >
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
         </ion-item>
     </ion-list>
 </ion-content>
+<ng-template #indicator>
+    <ion-content
+        class="ion-text-center ion-padding"
+        id="bakery-admin-main-content-loading"
+    >
+        <ion-spinner></ion-spinner>
+    </ion-content>
+</ng-template>

@@ -28,7 +28,7 @@
 </ion-menu>
 
 <ion-content id="bakery-main-content">
-    <ion-header>
+    <ion-header translucent>
         <ion-toolbar>
             <ion-buttons slot="start">
                 <ion-menu-toggle>
@@ -42,5 +42,6 @@
     </ion-header>
     <ion-content class="ion-padding">
         <ion-router-outlet id="bakery-content"></ion-router-outlet>
+        <app-bakery-admin-user-add-fab slot="fixed"></app-bakery-admin-user-add-fab>
     </ion-content>
 </ion-content>

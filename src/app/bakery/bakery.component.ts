@@ -5,6 +5,7 @@ import { map, mergeMap, filter } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import type firebase from 'firebase/compat/app';
 import { Router } from '@angular/router';
+import { BakeryAdminUserAddFabService } from '../bakery-admin-user-add-fab/bakery-admin-user-add-fab.service';
 
 export interface UserSettings {
     fullName?: string;
@@ -22,7 +23,8 @@ export class BakeryComponent {
     constructor(
         private afs: AngularFirestore,
         public auth: AngularFireAuth,
-        private router: Router
+        private router: Router,
+        public bakeryUserManager: BakeryAdminUserAddFabService
     ) {
         this.user$ = auth.user;
         this.userSettings$ = auth.user.pipe(

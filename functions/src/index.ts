@@ -4,7 +4,11 @@ import { Bakery, UserSettings } from '../../src/app/interfaces';
 import uniq from 'lodash.uniq';
 import { firestore } from 'firebase-admin';
 import DocumentSnapshot = firestore.DocumentSnapshot;
-import { resolveUserSettingForUserId } from './lib';
+import {
+    bakeryManagementCheck,
+    resolveUserSettingForUserId,
+    userEmailRequestCheck,
+} from './lib';
 
 const db = admin.firestore();
 
@@ -116,39 +120,7 @@ export const updateUserBakeriesOnBakeryUpdate = functions
 export const listBakeryUsers = functions
     .region('europe-west1')
     .https.onCall(async (data, context) => {
-        const uid = context.auth?.uid;
-        // Only authenticated users
-        if (!uid) {
-            throw new functions.https.HttpsError(
-                'failed-precondition',
-                'The function must be called while authenticated.'
-            );
-        }
-        const bakeryId = data?.bakeryId;
-        // Requires bakeryId
-        if (!bakeryId) {
-            throw new functions.https.HttpsError(
-                'invalid-argument',
-                'The function must be called with a bakeryId.'
-            );
-        }
-        const bakeryDoc = await db.doc(`bakery/${bakeryId}`).get();
-        // Check whether the bakery exists
-        if (!bakeryDoc.exists) {
-            throw new functions.https.HttpsError(
-                'not-found',
-                'Bakery with id ' + bakeryId + ' not found'
-            );
-        }
-        const bakery = bakeryDoc.data() as Bakery;
-        const isUserAdmin = bakery.admins.indexOf(uid) >= 0;
-        // Only admins should be able to list users of a bakery
-        if (!isUserAdmin) {
-            throw new functions.https.HttpsError(
-                'permission-denied',
-                'You are not admin of this bakery.'
-            );
-        }
+        const bakery = await bakeryManagementCheck(data, context);
 
         /* Resolve user settings for all users */
 
@@ -168,4 +140,53 @@ export const listBakeryUsers = functions
             users,
             admins,
         };
+    });
+
+export const addUserToBakery = functions
+    .region('europe-west1')
+    .https.onCall(async (data, context) => {
+        const { bakeryId, ...bakery } = await bakeryManagementCheck(
+            data,
+            context
+        );
+
+        const user = await userEmailRequestCheck(data);
+
+        // Add also as admin
+        if (data?.admin) {
+            bakery.admins = uniq([...bakery.admins, user.userId]);
+        }
+        bakery.users = uniq([...bakery.users, user.userId]);
+
+        await db.doc(`bakery/${bakeryId}`).set(bakery);
+    });
+
+export const removeUserFromBakery = functions
+    .region('europe-west1')
+    .https.onCall(async (data, context) => {
+        const { bakeryId, ...bakery } = await bakeryManagementCheck(
+            data,
+            context
+        );
+
+        const user = await userEmailRequestCheck(data);
+
+        // Unpromote
+        bakery.admins = bakery.admins.filter(
+            (adminId) => adminId !== user.userId
+        );
+        // Remove user if this is not an unpromote request
+        if (!data?.admin) {
+            bakery.users = bakery.users.filter((uid) => uid !== user.userId);
+        }
+
+        // There should always be at least one admin
+        if (bakery.admins.length === 0) {
+            throw new functions.https.HttpsError(
+                'invalid-argument',
+                'You can not remove the only admin'
+            );
+        }
+
+        await db.doc(`bakery/${bakeryId}`).set(bakery);
     });

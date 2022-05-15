@@ -5,6 +5,8 @@ import { BakeryListComponent } from '../bakery-list/bakery-list.component';
 import { BakeryListComponentModule } from '../bakery-list/bakery-list.module';
 import { BakeryAdminComponentModule } from '../bakery-admin/bakery-admin.module';
 import { BakeryAdminComponent } from '../bakery-admin/bakery-admin.component';
+import { RecipeListComponent } from '../recipe-list/recipe-list.component';
+import { RecipeListComponentModule } from '../recipe-list/recipe-list.module';
 
 const routes: Routes = [
     {
@@ -19,6 +21,10 @@ const routes: Routes = [
                 path: 'admin/:id',
                 component: BakeryAdminComponent,
             },
+            {
+                path: ':id/recipes',
+                component: RecipeListComponent,
+            },
         ],
     },
 ];
@@ -28,6 +34,7 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         BakeryListComponentModule,
         BakeryAdminComponentModule,
+        RecipeListComponentModule,
     ],
     exports: [RouterModule],
 })
