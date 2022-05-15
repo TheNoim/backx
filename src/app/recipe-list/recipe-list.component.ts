@@ -47,7 +47,7 @@ export class RecipeListComponent implements OnDestroy {
                     .collection<Recipe>('recipe', (ref) =>
                         ref.where('bakery', '==', bakeryId)
                     )
-                    .valueChanges()
+                    .valueChanges({ idField: 'id' })
             )
         );
     }

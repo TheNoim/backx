@@ -1,0 +1,37 @@
+<ion-content
+    id="bakery-recipe-main-content"
+    *ngIf="recipe$ | async as recipe; else indicator"
+>
+    <div class="ion-padding-horizontal">
+        <ion-text>
+            <p>
+                {{ recipe.description }}
+            </p>
+        </ion-text>
+    </div>
+    <ion-list>
+        <ion-list-header>Ingredients</ion-list-header>
+        <ion-item *ngFor="let ingredient of recipe.ingredients">
+            <ion-label>
+                <h2>{{ ingredient.name }}</h2>
+                <p>
+                    {{ ingredient.count }} <b>{{ ingredient.unit }}</b>
+                </p>
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list>
+        <ion-list-header>Steps</ion-list-header>
+        <ion-item *ngFor="let step of recipe.steps; index as index">
+            <ion-label>
+                <b>{{ index + 1 }}.</b> {{ step }}
+            </ion-label>
+        </ion-item>
+    </ion-list>
+</ion-content>
+
+<ng-template #indicator>
+    <ion-content id="bakery-list-main-content-loading" class="ion-text-center">
+        <ion-spinner></ion-spinner>
+    </ion-content>
+</ng-template>

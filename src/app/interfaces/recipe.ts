@@ -5,6 +5,7 @@ export interface Recipe {
     shortDescription?: string;
     name: string;
     steps: string[];
+    id: string;
 }
 
 export type Unit = 'g' | 'kg' | 'ml' | 'l';

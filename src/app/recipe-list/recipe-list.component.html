@@ -11,6 +11,9 @@
                     {{ recipe.shortDescription }}
                 </h3>
             </ion-label>
+            <ion-button [routerLink]="[recipe.id]">
+                <ion-icon slot="icon-only" name="open-outline"></ion-icon>
+            </ion-button>
         </ion-item>
     </ion-list>
 </ion-content>

@@ -7,6 +7,8 @@ import { BakeryAdminComponentModule } from '../bakery-admin/bakery-admin.module'
 import { BakeryAdminComponent } from '../bakery-admin/bakery-admin.component';
 import { RecipeListComponent } from '../recipe-list/recipe-list.component';
 import { RecipeListComponentModule } from '../recipe-list/recipe-list.module';
+import { RecipeDetailViewComponent } from '../recipe-detail-view/recipe-detail-view.component';
+import { RecipeDetailViewComponentModule } from '../recipe-detail-view/recipe-detail-view.module';
 
 const routes: Routes = [
     {
@@ -25,6 +27,10 @@ const routes: Routes = [
                 path: ':id/recipes',
                 component: RecipeListComponent,
             },
+            {
+                path: ':id/recipes/:recipeId',
+                component: RecipeDetailViewComponent,
+            },
         ],
     },
 ];
@@ -35,6 +41,7 @@ const routes: Routes = [
         BakeryListComponentModule,
         BakeryAdminComponentModule,
         RecipeListComponentModule,
+        RecipeDetailViewComponentModule,
     ],
     exports: [RouterModule],
 })
